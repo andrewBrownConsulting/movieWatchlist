@@ -35,23 +35,15 @@ function displayMovie(setMovieList: any, m: Movie, setSelectedMovie) {
         </div>
     );
 }
-export default function DisplayMovies({ setMovieList, movieList }) {
+export default function DisplayMovies(setMovieList: any, movieList: Movie[]) {
+
     const [selectedMovie, setSelectedMovie] = useState();
-    const [cols, setCols] = useState(1);
     useEffect(() => {
         getMoviesList().then((data) => {
             setMovieList(data);
-            console.log(data);
         }
         )
-        console.log("the viewport widht is " + window.innerWidth);
-        console.log("the poster number is " + (Math.min(Math.floor(window.innerWidth / 100), 10)));
     }, []);
-
-    //change the number of columns based on the viewport width
-    useEffect(() => {
-        setCols(Math.min(Math.floor(window.innerWidth / 100), 10));
-    }, [window.innerWidth]);
 
     return (
         <div className={"grid  w-[vw] gap-[10px] bg-slate-700 m-auto p-2 rounded-xl grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10"}>

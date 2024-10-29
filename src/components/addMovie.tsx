@@ -31,25 +31,6 @@ async function getMovieData(name: string) {
     const response = await fetch("https://api.themoviedb.org/3/search/movie?api_key=" + api_key + "&query=" + name);
     return response.json();
 }
-function findImage(data) {
-    //use tmdb api to find the image
-    //search for the movie name
-    console.log(data);
-    const imageUrl = "https://www.themoviedb.org/t/p/w600_and_h900_bestv2" + data.results[0].poster_path;
-    return imageUrl;
-}
-
-function findDescription(data) {
-    return data.results[0].overview;
-}
-function findTitle(data) {
-    return data.results[0].title;
-}
-
-function findYear(data) {
-    const date = data.results[0].release_date;
-    return date.split('-')[0];
-}
 
 function makePreviewTiles(movies, clickAddMovie, setPreviewTile) {
     //wait for the movies to be loaded
