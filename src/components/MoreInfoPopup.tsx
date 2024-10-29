@@ -1,24 +1,24 @@
 "use client";
 import { time } from "console";
 import { TIMEOUT } from "dns";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 
-export async function getMovieDirectors(movieId) {
+export async function getMovieDirectors(movieId: number) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "/credits?api_key=" + api_key;
     const response = await fetch(request);
     const data = await response.json();
-    const directors = data.crew.filter((person) => person.job === "Director");
+    const directors = data.crew.filter((person: { job: string }) => person.job === "Director");
     return directors;
 }
-function getMovieCastAndCrew(movieId, setCast, setDirectors, setWriters) {
+function getMovieCastAndCrew(movieId: number, setCast: any, setDirectors: any, setWriters: any) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "/credits?api_key=" + api_key;
     fetch(request).then((req) => {
         req.json().then((data) => {
             const cast = data.cast.slice(0, 6);
-            const directors = data.crew.filter((person) => person.job === "Director");
-            const writers = data.crew.filter((person) => person.job === "Screenplay" || person.job === "Writer").slice(0, 4);
+            const directors = data.crew.filter((person: { job: string; }) => person.job === "Director");
+            const writers = data.crew.filter((person: { job: string; }) => person.job === "Screenplay" || person.job === "Writer").slice(0, 4);
 
             setCast(cast);
             setDirectors(directors);
@@ -27,7 +27,7 @@ function getMovieCastAndCrew(movieId, setCast, setDirectors, setWriters) {
     });
 }
 
-function getMovieTrailer(movieId: number, setTrailer) {
+function getMovieTrailer(movieId: number, setTrailer: any) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "/videos?api_key=" + api_key;
     fetch(request).then((req) => {
@@ -36,7 +36,7 @@ function getMovieTrailer(movieId: number, setTrailer) {
                 setTrailer(null);
                 return;
             }
-            let trailers = data.results.filter((trailer) => trailer.type === "Trailer");
+            let trailers = data.results.filter((trailer: { type: string; }) => trailer.type === "Trailer");
             if (trailers.length === 0) {
                 trailers = data.results;
             }
@@ -52,56 +52,56 @@ function getMovieTrailer(movieId: number, setTrailer) {
     });
 }
 
-async function getRuntimeProductionCompanies(movieId: number, setRuntime, setProductionCompanies, setGenres, setCountry, setWebsite) {
+async function getRuntimeProductionCompanies(movieId: number, setRuntime: any, setProductionCompanyLogos: any, setGenres: any, setCountry: any, setWebsite: any) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + api_key;
 
-    const countryAbbrToName = {
-        "US": "United States",
-        "GB": "United Kingdom",
-        "CA": "Canada",
-        "AU": "Australia",
-        "DE": "Germany",
-        "FR": "France",
-        "IT": "Italy",
-        "JP": "Japan",
-        "KR": "South Korea",
-        "CN": "China",
-        "RU": "Russia",
-        "IN": "India",
-        "BR": "Brazil",
-        "MX": "Mexico",
-        "ES": "Spain",
-        "SE": "Sweden",
-        "NL": "Netherlands",
-        "DK": "Denmark",
-        "NO": "Norway",
-        "FI": "Finland",
-        "BE": "Belgium",
-        "IE": "Ireland",
-        "CH": "Switzerland",
-        "AT": "Austria",
-        "PT": "Portugal",
-        "PL": "Poland",
-        "HU": "Hungary",
-        "CZ": "Czech Republic",
-        "GR": "Greece",
-        "TR": "Turkey",
-        "SG": "Singapore",
-        "HK": "Hong Kong",
-        "TH": "Thailand",
-        "ID": "Indonesia",
-        "PH": "Philippines",
-        "AR": "Argentina",
-        "CL": "Chile",
-        "CO": "Colombia",
-        "PE": "Peru",
-        "ZA": "South Africa",
-        "EG": "Egypt"
-    };
+    const countryAbbrToName = new Map([
+        ["US", "United States"],
+        ["GB", "United Kingdom"],
+        ["CA", "Canada"],
+        ["AU", "Australia"],
+        ["DE", "Germany"],
+        ["FR", "France"],
+        ["IT", "Italy"],
+        ["JP", "Japan"],
+        ["KR", "South Korea"],
+        ["CN", "China"],
+        ["RU", "Russia"],
+        ["IN", "India"],
+        ["BR", "Brazil"],
+        ["MX", "Mexico"],
+        ["ES", "Spain"],
+        ["SE", "Sweden"],
+        ["NL", "Netherlands"],
+        ["DK", "Denmark"],
+        ["NO", "Norway"],
+        ["FI", "Finland"],
+        ["BE", "Belgium"],
+        ["IE", "Ireland"],
+        ["CH", "Switzerland"],
+        ["AT", "Austria"],
+        ["PT", "Portugal"],
+        ["PL", "Poland"],
+        ["HU", "Hungary"],
+        ["CZ", "Czech Republic"],
+        ["GR", "Greece"],
+        ["TR", "Turkey"],
+        ["SG", "Singapore"],
+        ["HK", "Hong Kong"],
+        ["TH", "Thailand"],
+        ["ID", "Indonesia"],
+        ["PH", "Philippines"],
+        ["AR", "Argentina"],
+        ["CL", "Chile"],
+        ["CO", "Colombia"],
+        ["PE", "Peru"],
+        ["ZA", "South Africa"],
+        ["EG", "Egypt"]
+    ]);
 
     setRuntime(null);
-    setProductionCompanies(null);
+    setProductionCompanyLogos(null);
     setGenres(null);
     setCountry(null);
     setWebsite(null);
@@ -116,21 +116,24 @@ async function getRuntimeProductionCompanies(movieId: number, setRuntime, setPro
             runtime = hours + "h " + minutes + "m";
             setRuntime(runtime);
 
-            let logos = companies.map((company) => {
+            let logos = companies.map((company: { logo_path: string }) => {
                 if (company.logo_path === null) {
                     return null;
                 }
                 return "https://image.tmdb.org/t/p/original" + company.logo_path;
             });
-            logos = logos.filter((logo) => logo !== null);
+            logos = logos.filter((logo: string) => logo !== null);
             logos = logos.slice(0, 5);
-            setProductionCompanies(logos);
+            setProductionCompanyLogos(logos);
 
-            const genres = data.genres.map((genre) => genre.name);
+            const genres = data.genres.map((genre: { name: string }) => genre.name);
             setGenres(genres);
-            const countries = [];
-            data.production_countries.forEach((country) => {
-                countries.push(countryAbbrToName[country.iso_3166_1]);
+            const countries: string[] = [];
+            data.production_countries.forEach((country: { iso_3166_1: string; }) => {
+                const countryName = countryAbbrToName.get(country.iso_3166_1);
+                if (countryName) {
+                    countries.push(countryName);
+                }
             });
             setCountry(countries);
             if (data.homepage)
@@ -139,7 +142,7 @@ async function getRuntimeProductionCompanies(movieId: number, setRuntime, setPro
     });
 }
 
-function getStreamingAvailability(movieId: number, setStreamingAvailability, setBuyingAvailability, setLink) {
+function getStreamingAvailability(movieId: number, setStreamingAvailability: any, setBuyingAvailability: any, setLink: any) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = `https://api.themoviedb.org/3/movie/${movieId}/watch/providers?api_key=${api_key}`
     fetch(request).then((req) => {
@@ -161,7 +164,7 @@ function getStreamingAvailability(movieId: number, setStreamingAvailability, set
     });
 }
 
-function streamingWidget(streamingAvailability, rentingAvailability, link) {
+function streamingWidget(streamingAvailability: any, rentingAvailability: any, link: string) {
     if (!streamingAvailability && !rentingAvailability) {
         return (<h2 className="m-auto hover:cursor-text">Not available to stream or rent</h2>);
     }
@@ -171,7 +174,7 @@ function streamingWidget(streamingAvailability, rentingAvailability, link) {
             <div className="grid grid-cols-1">
                 {streamingAvailability?.length > 0 ? <h2 className="m-auto hover:cursor-text">Streaming Availability:</h2> : null}
                 <div className={"grid gap-1 grid-cols-" + (streamingAvailability ? streamingAvailability.length : 1)}>
-                    {streamingAvailability ? streamingAvailability.map((stream) => {
+                    {streamingAvailability ? streamingAvailability.map((stream: { logo_path: string }) => {
                         return (<a href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + stream.logo_path} /></a>);
                     }
                     ) : "Not available to stream"}
@@ -182,7 +185,7 @@ function streamingWidget(streamingAvailability, rentingAvailability, link) {
         <div className="grid grid-cols-1">
             {rentingAvailability?.length > 0 ? <h2 className="m-auto hover:cursor-text">Renting Availability:</h2> : null}
             <div className={"grid gap-1 grid-cols-" + (rentingAvailability ? Math.min(rentingAvailability.length, 4) : 1)}>
-                {rentingAvailability ? rentingAvailability.map((buy) => {
+                {rentingAvailability ? rentingAvailability.map((buy: { logo_path: string }) => {
                     return (<a href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + buy.logo_path} /></a>);
                 }
                 ) : "Not available to rent"}
@@ -191,7 +194,7 @@ function streamingWidget(streamingAvailability, rentingAvailability, link) {
 
 }
 
-function castCrewWidget(cast, directors, writers) {
+function castCrewWidget(cast: { name: string, id: number }[], directors: { name: string, id: number }[], writers: { name: string, id: number }[]) {
     return (
         <div className="grid grid-cols-1">
             <h2 className='m-auto hover:cursor-text grid '> Cast: </h2>
@@ -218,34 +221,34 @@ function castCrewWidget(cast, directors, writers) {
         </div>
     );
 }
-export function MoreInfoPopup(m: Movie, setSelectedMovie) {
+export function MoreInfoPopup(m: Movie | null, setSelectedMovie: any) {
 
-    function handleChildElementClick(e) {
+    function handleChildElementClick(e: React.MouseEvent<HTMLDivElement>) {
         e.stopPropagation();
         // Do other stuff here
     }
 
     //const cast = null;
     //display a popup with more information
-    const [cast, setCast] = useState(null);
-    const [directors, setDirectors] = useState(null);
-    const [writers, setWriters] = useState(null);
-    const [trailer, setTrailer] = useState(null);
-    const [productionCompanies, setProductionCompanies] = useState(null);
+    const [cast, setCast] = useState<{ name: string, id: number }[]>([]);
+    const [directors, setDirectors] = useState<{ name: string, id: number }[]>([]);
+    const [writers, setWriters] = useState<{ name: string, id: number }[]>([]);
+    const [trailer, setTrailer] = useState<string>("");
+    const [productionCompanyLogos, setProductionCompanyLogos] = useState<string[]>([]);
     const [runtime, setRuntime] = useState(null);
     const [streamingAvailability, setStreamingAvailability] = useState(null);
     const [rentingAvailability, setRentingAvailability] = useState(null);
-    const [link, setLink] = useState(null);
+    const [link, setLink] = useState<string>("");
     const [genres, setGenres] = useState<string[] | null>(null);
     const [countries, setCountries] = useState<string[] | null>(null);
     const [website, setWebsite] = useState(null);
 
     if (!m) {
         useEffect(() => {
-            setCast(null);
-            setDirectors(null);
-            setWriters(null);
-            setTrailer(null);
+            setCast([]);
+            setDirectors([]);
+            setWriters([]);
+            setTrailer("");
         }, [m]
         );
         return null;
@@ -254,7 +257,7 @@ export function MoreInfoPopup(m: Movie, setSelectedMovie) {
     useEffect(() => {
         getMovieCastAndCrew(m.id, setCast, setDirectors, setWriters);
         getMovieTrailer(m.id, setTrailer);
-        getRuntimeProductionCompanies(m.id, setRuntime, setProductionCompanies, setGenres, setCountries, setWebsite);
+        getRuntimeProductionCompanies(m.id, setRuntime, setProductionCompanyLogos, setGenres, setCountries, setWebsite);
         getStreamingAvailability(m.id, setStreamingAvailability, setRentingAvailability, setLink);
     }, [m]);
 
@@ -281,8 +284,8 @@ export function MoreInfoPopup(m: Movie, setSelectedMovie) {
                         <h4 className="m-auto text-[15px] hover:cursor-text text-center">
                             {countries ? countries.join(", ") : "Loading..."}
                         </h4>
-                        <div className={"grid max-h-[100px] gap-3 grid-cols-" + Math.min(productionCompanies?.length, 4)}>
-                            {productionCompanies ? productionCompanies.map((logo) => {
+                        <div className={"grid max-h-[100px] gap-3 grid-cols-" + Math.min(productionCompanyLogos?.length ?? 0, 4)}>
+                            {productionCompanyLogos ? productionCompanyLogos.map((logo) => {
                                 return <img className="m-auto max-h-[100px] " src={logo} />;
                             }
                             ) : "Loading..."}

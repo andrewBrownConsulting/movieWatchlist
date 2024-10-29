@@ -14,7 +14,7 @@ export default function Home() {
         <h1 className="m-auto">Movie List Website</h1>
       </div>
       {DisplayMovies(setMovieList, movieList)}
-      <AddMovie setMovieList={setMovieList} />
+      {AddMovie(setMovieList)}
       <div className="flex flex-row m-auto w-[1000px] text-center">
         <p>special thanks to</p>
         <img className="w-[100px]" src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg" alt="tmdb" />

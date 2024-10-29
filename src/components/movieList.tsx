@@ -8,14 +8,14 @@ export async function getMoviesList() {
     return moviesList.json();
 }
 
-export function refreshMovies(setMovieList) {
+export function refreshMovies(setMovieList: any) {
     getMoviesList().then((data) => {
         setMovieList(data);
         console.log(data);
     });
 }
 
-export function removeMovie(setMovieList, id: number) {
+export function removeMovie(setMovieList: any, id: number) {
     //remove a movie from the database
     const request = "http://localhost:3002/delete-movie?id=" + id;
     fetch(request, {

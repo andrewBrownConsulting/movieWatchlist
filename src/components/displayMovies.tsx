@@ -1,5 +1,5 @@
 "use client"
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { Dispatch, MouseEvent, SetStateAction, use, useEffect, useState } from "react";
 import { getMoviesList, removeMovie } from "./movieList";
 import { get } from "http";
 import { log } from "console";
@@ -20,10 +20,10 @@ export function previewMovie(m: Movie, clickAddMovie: any, setPreviewTile: any) 
             <h1 className="items-center text-center m-auto max-h-[50px] text-white">{m.name + " (" + m.year + ")"}</h1>
         </div>);
 }
-function displayMovie(setMovieList: any, m: Movie, setSelectedMovie) {
+function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any) {
     //display a movie in a tile
 
-    function remove(e, setMovieList, id) {
+    function remove(e: React.MouseEvent<HTMLButtonElement>, setMovieList: any, id: number) {
         e.stopPropagation();
         removeMovie(setMovieList, id);
     }
@@ -37,7 +37,7 @@ function displayMovie(setMovieList: any, m: Movie, setSelectedMovie) {
 }
 export default function DisplayMovies(setMovieList: any, movieList: Movie[]) {
 
-    const [selectedMovie, setSelectedMovie] = useState();
+    const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     useEffect(() => {
         getMoviesList().then((data) => {
             setMovieList(data);
