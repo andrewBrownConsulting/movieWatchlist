@@ -1,28 +1,13 @@
 "use client"
 
-import { act, SetStateAction, useEffect, useRef, useState } from "react";
-import { refreshMovies } from "./movieList";
+import { SetStateAction, useEffect, useRef, useState } from "react";
+import { refreshMovies, addMovie } from "./movieList";
 import { previewMovie } from "./displayMovies";
 
 
-function addMovie(m: Movie) {
-    m.name = m.name.replace(' ', '+');
-    m.name = m.name.replace('&', '%26');
-    const request = "http://localhost:3002/add-movie?id=" + m.id + "&name=" + m.name + "&image=" + m.image + "&description=" + m.description + "&year=" + m.year;
-    fetch(request, {
-        method: 'POST',
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-}
+
 //find the poster image for a movie
 async function getMovieData(name: string) {
-    console.log("api call for " + name);
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const response = await fetch("https://api.themoviedb.org/3/search/movie?api_key=" + api_key + "&query=" + name);
     return response.json();
@@ -30,8 +15,6 @@ async function getMovieData(name: string) {
 
 function makePreviewTiles(movies: Movie[], clickAddMovie: (m: Movie, setPreviewTile: any) => void, setPreviewTile: (value: SetStateAction<JSX.Element | null>) => void) {
     //wait for the movies to be loaded 
-    console.log("making preview tiles");
-    console.log(movies);
     return (
         <div className="grid  gap-4 p-[10px] rounded-xl grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
             {movies.map((movie) => {

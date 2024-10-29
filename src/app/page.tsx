@@ -2,7 +2,6 @@
 import AddMovie from "@/components/addMovie";
 import DisplayMovies from "@/components/displayMovies";
 import { useState } from "react";
-import { app } from "@/firebaseConfig";
 
 export default function Home() {
   const [movieList, setMovieList] = useState<Movie[]>([]);
