@@ -62,6 +62,7 @@ function getRandomMovies(setTempMovies: any, tempMovies: any, options: { genre: 
                         image: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2" + rawMovie.poster_path,
                         description: rawMovie.overview,
                         year: rawMovie.release_date.split('-')[0],
+                        dateAdded: new Date()
                     };
                     allMovies.push(formattedMovie);
                 }
@@ -204,13 +205,11 @@ function ChooseActors(chosenActors: any, setChosenActors: any, actors: any, setA
     );
 }
 
-function makePreviewMovies(name: string, setRandomMovies: any) {
-
-    const namecopy = name + ""; //deep copy
-
+function makePreviewMovies(target: EventTarget & HTMLInputElement, setRandomMovies: any) {
+    const name = target.value;
     //wait one second and check if target has changed
     setTimeout(() => {
-        if (namecopy !== name) {
+        if (name != target.value) {
             return;
         }
         if (name.length < 3) {
@@ -231,6 +230,7 @@ function makePreviewMovies(name: string, setRandomMovies: any) {
                     image: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2" + rawMovie.poster_path,
                     description: rawMovie.overview,
                     year: rawMovie.release_date.split('-')[0],
+                    dateAdded: new Date()
                 };
                 formattedMovies.push(formattedMovie);
             }
@@ -242,7 +242,7 @@ function makePreviewMovies(name: string, setRandomMovies: any) {
 
 
 
-export default function AddMovie(setMovieList: any) {
+export default function AddMovie(setMovieList: any, username: string) {
     //make a default movie
     const [previewTiles, setPreviewTile] = useState<JSX.Element | null>(null);
     const [chosenGenre, setChosenGenre] = useState<string>("");
@@ -256,8 +256,8 @@ export default function AddMovie(setMovieList: any) {
 
     const myRef = useRef(null);
     function clickAddMovie(m: Movie, setPreviewTile: any) {
-        addMovie(m);
-        setTimeout(() => refreshMovies(setMovieList), 100);
+        addMovie(m, username);
+        setTimeout(() => refreshMovies(setMovieList, username), 100);
     }
 
     useEffect(() => {
@@ -288,7 +288,7 @@ export default function AddMovie(setMovieList: any) {
             </div>
             <div className="grid grid-cols-1 gap-5 text-center text-black m-auto p-4">
                 {searchType === "title" && <input type="text" name="name" autoComplete="off" required placeholder="Title" className="bg-gray-800 text-white text-center w-[500px] m-auto rounded-lg p-2 text-xl "
-                    onChange={(e) => { e.target.scrollIntoView(); makePreviewMovies(e.target.value, setTempMovies); }} />}
+                    onChange={(e) => { e.target.scrollIntoView(); makePreviewMovies(e.target, setTempMovies); }} />}
                 {searchType === "random" &&
                     <div className="grid grid-cols-3 gap-2 w-[100%] p-2 m-auto">
                         {ChooseGenre(chosenGenre, setChosenGenre)}

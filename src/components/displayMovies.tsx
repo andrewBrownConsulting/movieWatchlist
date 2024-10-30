@@ -20,12 +20,12 @@ export function previewMovie(m: Movie, clickAddMovie: any, setPreviewTile: any) 
             <h1 className="items-center text-center m-auto max-h-[50px] text-white">{m.name + " (" + m.year + ")"}</h1>
         </div>);
 }
-function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any) {
+function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any, username: string) {
     //display a movie in a tile
 
     function remove(e: React.MouseEvent<HTMLButtonElement>, setMovieList: any, id: number) {
         e.stopPropagation();
-        removeMovie(setMovieList, id);
+        removeMovie(setMovieList, id, username);
     }
     return (
         <div key={m.id} className='flex flex-col border border-red-100 rounded-xl hover:cursor-pointer overflow-hidden gap-1' onClick={() => setSelectedMovie(m)}>
@@ -35,11 +35,11 @@ function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any) {
         </div>
     );
 }
-export default function DisplayMovies(setMovieList: any, movieList: Movie[]) {
+export default function DisplayMovies(setMovieList: any, movieList: Movie[], username: string) {
 
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     useEffect(() => {
-        getMoviesList().then((data) => {
+        getMoviesList(username).then((data) => {
             setMovieList(data);
         }
         )
@@ -49,7 +49,7 @@ export default function DisplayMovies(setMovieList: any, movieList: Movie[]) {
         <div className={"grid  w-[vw] gap-[10px] bg-slate-700 m-auto p-2 rounded-xl grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10"}>
             {
                 movieList ? movieList.map((movie: Movie) => {
-                    return (displayMovie(setMovieList, movie, setSelectedMovie));
+                    return (displayMovie(setMovieList, movie, setSelectedMovie, username));
                 }) : "Loading..."}
             {MoreInfoPopup(selectedMovie, setSelectedMovie)}
         </div >

@@ -112,13 +112,6 @@
     "year": "2003"
   },
   {
-    "id": "400617",
-    "name": "Phantom Thread",
-    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/hgoWjp9Sh0MI97eAMZCnIoVfgvq.jpg",
-    "description": "In 1950s London, renowned British dressmaker Reynolds Woodcock comes across Alma, a young, strong-willed woman, who soon becomes ever present in his life as his muse and lover.",
-    "year": "2017"
-  },
-  {
     "id": "8052",
     "name": "Hard Eight",
     "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/1l5UaoP25Ak8PWCKIULQz70yF03.jpg",
@@ -208,13 +201,6 @@
     "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/bZ7Xx15zZdDzbKFKl4ULEJ11hWu.jpg",
     "description": "When Eastern European criminals Oleg and Emil come to New York City to pick up their share of a heist score, Oleg steals a video camera and starts filming their activities, both legal and illegal. When they learn how the American media circus can make a remorseless killer look like the victim and make them rich, they target media-savvy NYPD Homicide Detective Eddie Flemming and media-naive FDNY Fire Marshal Jordy Warsaw, the cops investigating their murder and torching of their former criminal partner, filming everything to sell to the local tabloid TV show \"Top Story.\"",
     "year": "2001"
-  },
-  {
-    "id": "9479",
-    "name": "The Nightmare Before Christmas",
-    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/oQffRNjK8e19rF7xVYEN8ew0j7b.jpg",
-    "description": "Tired of scaring humans every October 31 with the same old bag of tricks, Jack Skellington, the spindly king of Halloween Town, kidnaps Santa Claus and plans to deliver shrunken heads and other ghoulish gifts to children on Christmas morning. But as Christmas approaches, Jack's rag-doll girlfriend, Sally, tries to foil his misguided plans.",
-    "year": "1993"
   },
   {
     "id": "1368",
@@ -334,5 +320,68 @@
     "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/oN20MLvoLv14whAss05V3ETBu0p.jpg",
     "description": "The life of George Falconer, a British college professor, is reeling with the recent and sudden loss of his longtime partner. This traumatic event makes George challenge his own will to live as he seeks the console of his close girl friend Charley, who is struggling with her own questions about life.",
     "year": "2009"
+  },
+  {
+    "id": "1358947",
+    "name": "The Most Wonderful Time of the Year",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/3ivqP56Jd8RkbDidoe1rGFVGpJZ.jpg",
+    "description": "Sideshow Bob teams up with the most infamous villains of Disney  to share the true meaning of the Halloween season. Filled with music, mayhem, and madness, this short from \"The Simpsons\" is simply to die for.",
+    "year": "2024"
+  },
+  {
+    "id": "1175038",
+    "name": "Stranger in the Woods",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/qcrbiVMOkAaOyha8BqyVDQCTwh6.jpg",
+    "description": "Olivia and her friends go on a vacation. After Olivia nearly drowns with a slit wrist in her bathtub after her fiancé's funeral, her friends suspect that she tried to kill herself, but she believes someone attacked her.",
+    "year": "2024"
+  },
+  {
+    "id": "1184918",
+    "name": "The Wild Robot",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",
+    "description": "After a shipwreck, an intelligent robot called Roz is stranded on an uninhabited island. To survive the harsh environment, Roz bonds with the island's animals and cares for an orphaned baby goose.",
+    "year": "2024"
+  },
+  {
+    "id": "9479",
+    "name": "The Nightmare Before Christmas",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/oQffRNjK8e19rF7xVYEN8ew0j7b.jpg",
+    "description": "Tired of scaring humans every October 31 with the same old bag of tricks, Jack Skellington, the spindly king of Halloween Town, kidnaps Santa Claus and plans to deliver shrunken heads and other ghoulish gifts to children on Christmas morning. But as Christmas approaches, Jack's rag-doll girlfriend, Sally, tries to foil his misguided plans.",
+    "year": "1993"
+  },
+  {
+    "id": "786892",
+    "name": "Furiosa: A Mad Max Saga",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/iADOJ8Zymht2JPMoy3R7xceZprc.jpg",
+    "description": "As the world fell, young Furiosa is snatched from the Green Place of Many Mothers and falls into the hands of a great Biker Horde led by the Warlord Dementus. Sweeping through the Wasteland they come across the Citadel presided over by The Immortan Joe. While the two Tyrants war for dominance, Furiosa must survive many trials as she puts together the means to find her way home.",
+    "year": "2024"
+  },
+  {
+    "id": "1337309",
+    "name": "Bangkok Breaking: Heaven and Hell",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/6VeDn4oIeUK4XwjWGWMb6qvMImQ.jpg",
+    "description": "When a dedicated rescue worker inadvertently gets caught up in the kidnapping plot of a mogul's tween daughter, he must save her from the clutches of rival gangs hunting them down with unpredictable dangers around every corner.",
+    "year": "2024"
+  },
+  {
+    "id": "1064028",
+    "name": "Subservience",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gBenxR01Uy0Ev9RTIw6dVBPoyQU.jpg",
+    "description": "With his wife out sick, a struggling father brings home a lifelike AI, only to have his self-aware new help want everything her new family has to offer... Like the affection of her owner and she'll kill to get it.",
+    "year": "2024"
+  },
+  {
+    "id": "198663",
+    "name": "The Maze Runner",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/ode14q7WtDugFDp78fo9lCsmay9.jpg",
+    "description": "Set in a post-apocalyptic world, young Thomas is deposited in a community of boys after his memory is erased, soon learning they're all trapped in a maze that will require him to join forces with fellow “runners” for a shot at escape.",
+    "year": "2014"
+  },
+  {
+    "id": "482600",
+    "name": "Japanese Mom",
+    "image": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/hq1EaYIqUNrPM3QFYAbnH2UHoX8.jpg",
+    "description": "\"Innocent face, D-cup breasts and perfect intercourse skills! Son, this is not your girlfriend anymore but your mother!\"  Ki-ho brings Yuki from Japan to marry her. However, he starts cheating on her with his ex-girlfriend in Korea.  Min-cheol comforted Yuki and thought of her as his daughter-in-law, but one day he realizes he is looking at her as a woman.  In the end, Yuki and Min-cheol have intercourse without Ki-ho knowing...",
+    "year": "2017"
   }
 ]

@@ -4,4 +4,5 @@ interface Movie {
     image: string;
     description: string;
     year: number;
+    dateAdded: Date;
 }
