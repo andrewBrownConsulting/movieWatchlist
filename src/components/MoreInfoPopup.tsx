@@ -1,13 +1,12 @@
 "use client";
-import { time } from "console";
-import { TIMEOUT } from "dns";
-import { useState, useEffect, SetStateAction } from "react";
+import { useState, useEffect, SetStateAction, use, JSXElementConstructor, ReactElement } from "react";
 
 export async function getMovieDirectors(movieId: number) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "/credits?api_key=" + api_key;
     const response = await fetch(request);
     const data = await response.json();
+    if (!data.crew) return [];
     const directors = data.crew.filter((person: { job: string }) => person.job === "Director");
     return directors;
 }
@@ -46,13 +45,11 @@ function getMovieTrailer(movieId: number, setTrailer: any) {
             const url = "https://www.youtube.com/embed/" + trailerId;
 
             setTrailer(url);
-            console.log(data);
-            console.log(url);
         });
     });
 }
 
-async function getRuntimeProductionCompanies(movieId: number, setRuntime: any, setProductionCompanyLogos: any, setGenres: any, setCountry: any, setWebsite: any) {
+async function getRuntimeProductionCompanies(movieId: number, setRuntime: any, setProductionCompanyLogos: any, setGenres: any, setCountry: any, setWebsite: any, setReviews: any) {
     const api_key = "1ea4c77bc924d2f26c117fbfdcfd6664";
     const request = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + api_key;
 
@@ -107,7 +104,6 @@ async function getRuntimeProductionCompanies(movieId: number, setRuntime: any, s
     setWebsite(null);
     fetch(request).then((req) => {
         req.json().then((data) => {
-            console.log(data);
             const companies = data.production_companies;
             let runtime = data.runtime;
             //convert runtime to hours and minutes
@@ -138,6 +134,9 @@ async function getRuntimeProductionCompanies(movieId: number, setRuntime: any, s
             setCountry(countries);
             if (data.homepage)
                 setWebsite(data.homepage);
+
+            setReviews({ score: data.vote_average, count: data.vote_count });
+            // console.log(data);
         });
     });
 }
@@ -150,7 +149,6 @@ function getStreamingAvailability(movieId: number, setStreamingAvailability: any
             setStreamingAvailability(null);
             setBuyingAvailability(null);
             setLink(null);
-            console.log(data);
             const gbResults = data.results.GB;
             let streamingAvailability = null;
             if (gbResults) {
@@ -168,14 +166,14 @@ function streamingWidget(streamingAvailability: any, rentingAvailability: any, l
     if (!streamingAvailability && !rentingAvailability) {
         return (<h2 className="m-auto hover:cursor-text">Not available to stream or rent</h2>);
     }
-    console.log("rentingAvailability len = " + rentingAvailability?.length);
+    let counter = 0;
     if (streamingAvailability?.length > 0) {
         return (
             <div className="grid grid-cols-1">
                 {streamingAvailability?.length > 0 ? <h2 className="m-auto hover:cursor-text">Streaming Availability:</h2> : null}
                 <div className={"grid gap-1 grid-cols-" + (streamingAvailability ? streamingAvailability.length : 1)}>
                     {streamingAvailability ? streamingAvailability.map((stream: { logo_path: string }) => {
-                        return (<a href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + stream.logo_path} /></a>);
+                        return (<a key={counter++} href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + stream.logo_path} /></a>);
                     }
                     ) : "Not available to stream"}
                 </div>
@@ -184,9 +182,9 @@ function streamingWidget(streamingAvailability: any, rentingAvailability: any, l
     return (
         <div className="grid grid-cols-1">
             {rentingAvailability?.length > 0 ? <h2 className="m-auto hover:cursor-text">Renting Availability:</h2> : null}
-            <div className={"grid gap-1 grid-cols-" + (rentingAvailability ? Math.min(rentingAvailability.length, 4) : 1)}>
+            <div className={"grid gap-1 grid-cols-4"}>
                 {rentingAvailability ? rentingAvailability.map((buy: { logo_path: string }) => {
-                    return (<a href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + buy.logo_path} /></a>);
+                    return (<a key={counter++} href={link}><img className="m-auto h-[50px]" src={"https://image.tmdb.org/t/p/original" + buy.logo_path} /></a>);
                 }
                 ) : "Not available to rent"}
             </div>
@@ -221,15 +219,166 @@ function castCrewWidget(cast: { name: string, id: number }[], directors: { name:
         </div>
     );
 }
-export function MoreInfoPopup(m: Movie | null, setSelectedMovie: any) {
 
-    function handleChildElementClick(e: React.MouseEvent<HTMLDivElement>) {
-        e.stopPropagation();
-        // Do other stuff here
+export function makeStars(score: number) {
+    const star = <svg className="m-auto" width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L14.09 8.26L20.84 9.27L15.92 13.97L17.27 20.72L12 17.77L6.73 20.72L8.08 13.97L3.16 9.27L9.91 8.26L12 2Z"
+            fill="yellow" />
+    </svg>;
+    const noStar = (<svg className="m-auto" width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L14.09 8.26L20.84 9.27L15.92 13.97L17.27 20.72L12 17.77L6.73 20.72L8.08 13.97L3.16 9.27L9.91 8.26L12 2Z"
+            fill="black" />
+    </svg>);
+    //round score to nearest 0.1
+    const numStars = Math.round((score + 1) / 2);
+    const stars = [];
+    //make stars which are filled up to numStars float
+    for (let i = 0; i < numStars; i++) {
+        stars.push(<div key={i}>{star}</div>);
     }
+    for (let i = 0; i < 5 - numStars; i++) {
+        stars.push(<div key={5 - i}>{noStar}</div>);
+    }
+    return (
+        <div className="grid grid-cols-5 w-[100%] max-w-[200px] m-auto">
+            {stars}
+        </div>
+    );
+}
 
-    //const cast = null;
-    //display a popup with more information
+function ThreeColumnPopup(m: Movie, setSelectedMovie: any, website: any, reviews: any, cast: any, directors: any, writers: any, trailer: any, productionCompanyLogos: any, runtime: any, genres: any, countries: any, streamingAvailability: any, rentingAvailability: any, link: any) {
+    let logoCounter = 0;
+    return (
+        <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[100%] h-[100%] z-10 bg-[rgba(255,255,255,0.15)] hover:cursor-pointer" onClick={() => setSelectedMovie(null)}>
+            <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[85%] h-[85%] bg-slate-500 z-20 rounded-[50px] p-10 hover:cursor-default" onClick={(e) => e.stopPropagation()}>
+                <div className="grid grid-cols-3 gap-5 h-[100%] overflow-auto">
+                    <img className="m-auto h-[90%] object-contain" src={m.image} alt={m.name} />
+                    <div className="grid grid-cols-1 gap-2" >
+                        {website != null ?
+                            <a href={website} className="m-auto text-xl hover:cursor-pointer">
+                                <h1 className="m-auto text-xl  text-center"> {m.name + " (" + m.year + ")"} </h1>
+                            </a> : <h1 className="m-auto text-xl hover:cursor-text text-center"> {m.name + " (" + m.year + ")"} </h1>
+                        }
+                        <div className="flex flex-col align-middle gap-0">
+                            {makeStars(reviews?.score)}
+                            <div className="m-auto">({reviews?.count})</div>
+                        </div>
+                        <h2 key="desc" className='m-auto hover:cursor-text text-center'> {m.description} </h2>
+                        <h2 key="runtime" className="m-auto text-[20px] hover:cursor-text">{runtime}</h2>
+                        <h2 key="genres" className="m-auto text-[20px] hover:cursor-text">
+                            {//display genres with commas
+                                genres ? genres.join(", ") : "Loading..."
+                            }
+                        </h2>
+                        <h4 className="m-auto text-[15px] hover:cursor-text text-center">
+                            {countries ? countries.join(", ") : "Loading..."}
+                        </h4>
+                        <div className={"grid max-h-[100px] gap-3 grid-cols-" + Math.min(productionCompanyLogos?.length ?? 0, 4)}>
+                            {productionCompanyLogos ? productionCompanyLogos.map((logo: string) => {
+                                return <img key={logoCounter++} className="m-auto max-h-[100px] " src={logo} />;
+                            }
+                            ) : "Loading..."}
+                        </div>
+
+                    </div>
+                    <div className="grid grid-cols-1 gap-2">
+                        {castCrewWidget(cast, directors, writers)}
+                        {trailer && <iframe src={trailer} className="m-auto w-[100%] max-w-[500px] aspect-video" allowFullScreen />}
+                        {streamingWidget(streamingAvailability, rentingAvailability, link)}
+
+                    </div>
+                </div>
+            </div>
+        </div >
+    );
+}
+
+function TwoColumnPopup(m: Movie, setSelectedMovie: any, website: any, reviews: any, cast: any, directors: any, writers: any, trailer: any, productionCompanyLogos: any, runtime: any, genres: any, countries: any, streamingAvailability: any, rentingAvailability: any, link: any) {
+    let logoCounter = 0;
+    return (
+        <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[100%] h-[100%] z-10 bg-[rgba(255,255,255,0.15)] hover:cursor-pointer" onClick={() => setSelectedMovie(null)}>
+            <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[85%] h-[85%] bg-slate-500 z-20 rounded-[50px] p-10 hover:cursor-default" onClick={(e) => e.stopPropagation()}>
+                <div className="grid grid-cols-2 gap-4 h-[100%] overflow-auto">
+                    <div className="grid grid-cols-1 gap-1 max-h-[100%]" >
+                        <img className="m-auto object-contain max-h-[500px]" src={m.image} alt={m.name} />
+
+                        {website != null ?
+                            <a href={website} className="m-auto text-xl hover:cursor-pointer">
+                                <h1 className="m-auto text-xl  text-center"> {m.name + " (" + m.year + ")"} </h1>
+                            </a> : <h1 className="m-auto text-xl hover:cursor-text text-center"> {m.name + " (" + m.year + ")"} </h1>
+                        }
+                        {makeStars(reviews?.score)}
+                        <div className="m-auto">({reviews?.count})</div>
+                        <h2 key="runtime" className="m-auto text-[20px] hover:cursor-text">{runtime}</h2>
+                        <h2 key="genres" className="m-auto text-[20px] hover:cursor-text">
+                            {//display genres with commas
+                                genres ? genres.join(", ") : "Loading..."
+                            }
+                        </h2>
+                        <h4 className="m-auto text-[15px] hover:cursor-text text-center">
+                            {countries ? countries.join(", ") : "Loading..."}
+                        </h4>
+                        <div className={"grid max-h-[100px] gap-1 grid-cols-" + Math.min(productionCompanyLogos?.length ?? 0, 4)}>
+                            {productionCompanyLogos ? productionCompanyLogos.map((logo: string) => {
+                                return <img key={logoCounter++} className="m-auto max-h-[100px] " src={logo} />;
+                            }
+                            ) : "Loading..."}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1" >
+                        <h2 key="desc" className='m-auto hover:cursor-text text-center'> {m.description} </h2>
+                        {castCrewWidget(cast, directors, writers)}
+                        {trailer && <iframe src={trailer} className="m-auto w-[100%] max-w-[500px] aspect-video" allowFullScreen />}
+                        {streamingWidget(streamingAvailability, rentingAvailability, link)}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function OneColumnPopup(m: Movie, setSelectedMovie: any, website: any, reviews: any, cast: any, directors: any, writers: any, trailer: any, productionCompanyLogos: any, runtime: any, genres: any, countries: any, streamingAvailability: any, rentingAvailability: any, link: any) {
+    let logoCounter = 0;
+    return (
+        <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[100%] h-[100%] z-10 bg-[rgba(255,255,255,0.15)] hover:cursor-pointer" onClick={() => setSelectedMovie(null)}>
+            <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[85%] h-[85%] bg-slate-500 z-20 rounded-[50px] p-10 hover:cursor-default" onClick={(e) => e.stopPropagation()}>
+                <div className="grid grid-cols-1 gap-4 h-[100%] overflow-auto">
+                    <img className="m-auto h-[300px] object-contain" src={m.image} alt={m.name} />
+                    {website != null ?
+                        <a href={website} className="m-auto text-xl hover:cursor-pointer">
+                            <h1 className="m-auto text-xl  text-center"> {m.name + " (" + m.year + ")"} </h1>
+                        </a> : <h1 className="m-auto text-xl hover:cursor-text text-center"> {m.name + " (" + m.year + ")"} </h1>
+                    }
+                    {makeStars(reviews?.score)}
+                    <div className="m-auto">({reviews?.count})</div>
+                    <h2 key="runtime" className="m-auto text-[20px] hover:cursor-text">{runtime}</h2>
+                    <h2 key="genres" className="m-auto text-[20px] hover:cursor-text">
+                        {//display genres with commas
+                            genres ? genres.join(", ") : "Loading..."
+                        }
+                    </h2>
+                    <h4 className="m-auto text-[15px] hover:cursor-text text-center">
+                        {countries ? countries.join(", ") : "Loading..."}
+                    </h4>
+                    <div className={"grid max-h-[100px] gap-1 grid-cols-" + Math.min(productionCompanyLogos?.length ?? 0, 4)}>
+                        {productionCompanyLogos ? productionCompanyLogos.map((logo: string) => {
+                            return <img key={logoCounter++} className="m-auto max-h-[100px] " src={logo} />;
+                        }
+                        ) : "Loading..."}
+                    </div>
+                    <h2 key="desc" className='m-auto hover:cursor-text text-center'> {m.description} </h2>
+                    {castCrewWidget(cast, directors, writers)}
+                    {trailer && <iframe src={trailer} className="m-auto w-[100%] max-w-[500px] aspect-video" allowFullScreen />}
+                    {streamingWidget(streamingAvailability, rentingAvailability, link)}
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
+export function MoreInfoPopup(m: Movie | null, setSelectedMovie: any) {
     const [cast, setCast] = useState<{ name: string, id: number }[]>([]);
     const [directors, setDirectors] = useState<{ name: string, id: number }[]>([]);
     const [writers, setWriters] = useState<{ name: string, id: number }[]>([]);
@@ -242,63 +391,59 @@ export function MoreInfoPopup(m: Movie | null, setSelectedMovie: any) {
     const [genres, setGenres] = useState<string[] | null>(null);
     const [countries, setCountries] = useState<string[] | null>(null);
     const [website, setWebsite] = useState(null);
+    const [reviews, setReviews] = useState<{ score: number, count: number }>({ score: 0, count: 0 });
 
-    if (!m) {
-        useEffect(() => {
-            setCast([]);
-            setDirectors([]);
-            setWriters([]);
-            setTrailer("");
-        }, [m]
-        );
-        return null;
+    const [popupType, setPopupType] = useState<ReactElement<any, any>>(<div></div>);
+
+    function updatePopup() {
+        {
+            if (m) {
+                const width = window.innerWidth;
+                if (width < 800)
+                    setPopupType(OneColumnPopup(m, setSelectedMovie, website, reviews, cast, directors, writers, trailer, productionCompanyLogos, runtime, genres, countries, streamingAvailability, rentingAvailability, link));
+                if (800 < width && width < 1500)
+                    setPopupType(TwoColumnPopup(m, setSelectedMovie, website, reviews, cast, directors, writers, trailer, productionCompanyLogos, runtime, genres, countries, streamingAvailability, rentingAvailability, link));
+                if (width > 1500)
+                    setPopupType(ThreeColumnPopup(m, setSelectedMovie, website, reviews, cast, directors, writers, trailer, productionCompanyLogos, runtime, genres, countries, streamingAvailability, rentingAvailability, link));
+            }
+        }
     }
 
+    let timeoutId: NodeJS.Timeout;
+    const handleResize = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(updatePopup, 200);
+    };
     useEffect(() => {
-        getMovieCastAndCrew(m.id, setCast, setDirectors, setWriters);
-        getMovieTrailer(m.id, setTrailer);
-        getRuntimeProductionCompanies(m.id, setRuntime, setProductionCompanyLogos, setGenres, setCountries, setWebsite);
-        getStreamingAvailability(m.id, setStreamingAvailability, setRentingAvailability, setLink);
+        if (!m) {
+            setPopupType(<div></div>);
+            window.removeEventListener("resize", handleResize);
+
+        }
+        else {
+            getMovieCastAndCrew(m.id, setCast, setDirectors, setWriters);
+            getMovieTrailer(m.id, setTrailer);
+            getRuntimeProductionCompanies(m.id, setRuntime, setProductionCompanyLogos, setGenres, setCountries, setWebsite, setReviews);
+            getStreamingAvailability(m.id, setStreamingAvailability, setRentingAvailability, setLink);
+            updatePopup();
+            window.addEventListener("resize", handleResize);
+        }
+        return () => {
+            window.removeEventListener("resize", handleResize);
+
+        };
     }, [m]);
 
-
+    useEffect(() => {
+        if (m)
+            updatePopup();
+    }, [cast, directors, writers, trailer, runtime, genres, countries, website, reviews, streamingAvailability, rentingAvailability, link]);
 
     return (
-        <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[100%] h-[100%] z-10 bg-[rgba(255,255,255,0.15)] hover:cursor-pointer" onClick={() => setSelectedMovie(null)}>
-            <div className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[85%] h-[85%] bg-slate-500 z-20 rounded-[50px] p-10 hover:cursor-default" onClick={(e) => handleChildElementClick(e)}>
-                <div className="grid grid-cols-1  xl:grid-cols-3 gap-5 h-[100%] overflow-auto">
-                    <img className="m-auto max-h-[400px] xl:max-h-[90%]" src={m.image} alt={m.name} />
-                    <div className="grid grid-cols-1 gap-2 m-auto" >
-                        {website != null ?
-                            <a href={website} className="m-auto text-xl hover:cursor-pointer">
-                                <h1 className="m-auto text-xl  text-center"> {m.name + " (" + m.year + ")"} </h1>
-                            </a> : <h1 className="m-auto text-xl hover:cursor-text text-center"> {m.name + " (" + m.year + ")"} </h1>
-                        }
-                        <h2 className='m-auto hover:cursor-text text-center'> {m.description} </h2>
-                        <h2 className="m-auto text-[20px] hover:cursor-text">{runtime}</h2>
-                        <h2 className="m-auto text-[20px] hover:cursor-text">
-                            {//display genres with commas
-                                genres ? genres.join(", ") : "Loading..."
-                            }
-                        </h2>
-                        <h4 className="m-auto text-[15px] hover:cursor-text text-center">
-                            {countries ? countries.join(", ") : "Loading..."}
-                        </h4>
-                        <div className={"grid max-h-[100px] gap-3 grid-cols-" + Math.min(productionCompanyLogos?.length ?? 0, 4)}>
-                            {productionCompanyLogos ? productionCompanyLogos.map((logo) => {
-                                return <img className="m-auto max-h-[100px] " src={logo} />;
-                            }
-                            ) : "Loading..."}
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2">
-                        {castCrewWidget(cast, directors, writers)}
-                        {trailer && <iframe src={trailer} className="m-auto w-[100%] max-w-[500px] aspect-video" allowFullScreen />}
-                        {streamingWidget(streamingAvailability, rentingAvailability, link)}
-
-                    </div>
-                </div>
-            </div>
-        </div >
+        <div>
+            {popupType}
+        </div>
     );
+
+
 }

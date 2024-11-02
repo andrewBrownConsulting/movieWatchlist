@@ -5,4 +5,6 @@ interface Movie {
     description: string;
     year: number;
     dateAdded: Date;
+    reviewScore: number;
+    directors: number[];
 }

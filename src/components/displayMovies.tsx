@@ -1,24 +1,27 @@
 "use client"
-import { Dispatch, MouseEvent, SetStateAction, use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getMoviesList, removeMovie } from "./movieList";
-import { get } from "http";
-import { log } from "console";
-import { writer } from "repl";
-import { MoreInfoPopup } from "./MoreInfoPopup";
-import { stringify } from "querystring";
+import { MoreInfoPopup, makeStars } from "./MoreInfoPopup";
 //import MoreInfoPopup from "./MoreInfoPopup";
 
 
-export function previewMovie(m: Movie, clickAddMovie: any, setPreviewTile: any) {
+export function previewMovie(m: Movie, clickAddMovie: any, setPreviewTile: any, setSelectedMovie: any) {
     //display a movie in a tile
     if (m.image === null) {
         return null;
     }
     return (
-        <div key={m.id} className='flex flex-col border border-red-100 rounded-xl hover:cursor-pointer overflow-hidden gap-1' onClick={() => clickAddMovie(m, setPreviewTile)}>
-            <img className=" object-cover " src={m.image} alt={m.name} />
-            <h1 className="items-center text-center m-auto max-h-[50px] text-white">{m.name + " (" + m.year + ")"}</h1>
-        </div>);
+        <div key={"" + m.id} className='flex flex-col border border-red-100 rounded-xl hover:cursor-pointer overflow-hidden gap-1 items-center' onClick={() => clickAddMovie(m, setPreviewTile)
+        } >
+            <div className="relative w-full">
+                <img className="object-cover w-full" src={m.image} alt={m.name} />
+                <button className="absolute top-2 right-2 px-5 py-2 text-lg bg-blue-700 text-white rounded-lg italic " onClick={(e) => { e.stopPropagation(); setSelectedMovie(m) }}>i</button>
+            </div>
+            <div className="w-[100%] h-[50px]  justify-center overflow-hidden flex">
+                <h1 className="m-auto align-middle text-white ">{m.name + " (" + m.year + ")"}</h1>
+            </div>
+            {makeStars(m.reviewScore)}
+        </div >);
 }
 function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any, username: string) {
     //display a movie in a tile
@@ -28,21 +31,21 @@ function displayMovie(setMovieList: any, m: Movie, setSelectedMovie: any, userna
         removeMovie(setMovieList, id, username);
     }
     return (
-        <div key={m.id} className='flex flex-col border border-red-100 rounded-xl hover:cursor-pointer overflow-hidden gap-1' onClick={() => setSelectedMovie(m)}>
+        <div key={"" + m.id} className='flex flex-col border border-red-100 rounded-xl hover:cursor-pointer overflow-hidden gap-1' onClick={() => setSelectedMovie(m)}>
             <img className=" object-cover " src={m.image} alt={m.name} />
-            <h1 className="items-center text-center m-auto max-h-[50px]">{m.name + " (" + m.year + ")"}</h1>
-            <button className='text-white text-lg bg-red-500 rounded-lg w-[100%] h-[60px] float-end' onClick={(e) => remove(e, setMovieList, m.id)}>Remove</button>
+            <h1 className="items-center text-center h-[50px] overflow-hidden">{m.name + " (" + m.year + ")"}</h1>
+            {makeStars(m.reviewScore)}
+            <button className='text-white text-lg bg-red-500 rounded-lg w-[100%] h-[40px] float-end' onClick={(e) => remove(e, setMovieList, m.id)}>Remove</button>
         </div>
     );
 }
-export default function DisplayMovies(setMovieList: any, movieList: Movie[], username: string) {
+export default function DisplayMovies(setMovieList: any, movieList: Movie[], username: string, setSelectedMovie: any) {
 
-    const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+
     useEffect(() => {
         getMoviesList(username).then((data) => {
             setMovieList(data);
-        }
-        )
+        })
     }, []);
 
     return (
@@ -50,8 +53,8 @@ export default function DisplayMovies(setMovieList: any, movieList: Movie[], use
             {
                 movieList ? movieList.map((movie: Movie) => {
                     return (displayMovie(setMovieList, movie, setSelectedMovie, username));
-                }) : "Loading..."}
-            {MoreInfoPopup(selectedMovie, setSelectedMovie)}
+                }) : "Loading..."
+            }
         </div >
     );
 }

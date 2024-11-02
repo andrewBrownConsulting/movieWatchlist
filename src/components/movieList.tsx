@@ -1,4 +1,5 @@
 "use client"
+import { dir } from "console";
 import { db } from "./firebaseConfig";
 import { collection, doc, getDoc, getDocs, DocumentData, DocumentReference, deleteDoc, setDoc } from 'firebase/firestore';
 
@@ -9,6 +10,8 @@ interface FirebaseMovie {
     name: string;
     year: number;
     dateAdded: Date;
+    reviewScore: number;
+    directors: string[];
 }
 export async function getMoviesList(username: string) {
     if (username === "") {
@@ -30,7 +33,9 @@ export async function getMoviesList(username: string) {
             image: doc.image,
             name: doc.name,
             year: doc.year,
-            dateAdded: doc.dateAdded
+            dateAdded: doc.dateAdded,
+            reviewScore: doc.reviewScore,
+            directors: doc.directors
         };
         movies.push(movie);
     });
@@ -53,7 +58,7 @@ export function removeMovie(setMovieList: any, id: number, username: string) {
     const moviesCollection = collection(db, username);
     const docRef = doc(moviesCollection, id.toString());
     //delete the doc with the id
-    console.log("deleting doc with id: " + id);
+    //console.log("deleting doc with id: " + id);
     deleteDoc(docRef).then(() => {
         refreshMovies(setMovieList, username);
     });
@@ -64,7 +69,7 @@ export function addMovie(m: Movie, username: string) {
     const moviesCollection = collection(db, username);
     const docRef = doc(moviesCollection, m.id.toString());
     //add a movie to the database
-    console.log("adding movie: " + m.name);
+    //console.log("adding movie: " + m.name);
     const date = new Date();
     const newMovie: Movie = {
         description: m.description,
@@ -72,7 +77,9 @@ export function addMovie(m: Movie, username: string) {
         image: m.image,
         name: m.name,
         year: m.year,
-        dateAdded: date
+        dateAdded: date,
+        reviewScore: m.reviewScore,
+        directors: m.directors
     }
     //add the doc with the id
     return setDoc(docRef, newMovie);
